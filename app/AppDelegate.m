@@ -35,6 +35,9 @@
 #if !TARGET_OS_IPHONE
     SSMainMenu *menuBuilder = [[SSMainMenu alloc] init];
     menuBuilder.appName = @"SmallScreenshot";
+    menuBuilder.aboutAppName = @"SmallScreenshot";
+    menuBuilder.aboutVersion = @"1.0";
+    menuBuilder.aboutTarget = self;
     NSArray *items = [NSArray arrayWithObjects:
         [SSMainMenuItem itemWithTitle:@"Capture Full Screen" action:@selector(captureFullScreen:) keyEquivalent:@"1" modifierMask:NSCommandKeyMask target:self],
         [SSMainMenuItem itemWithTitle:@"Capture Region…" action:@selector(captureRegion:) keyEquivalent:@"2" modifierMask:NSCommandKeyMask target:self],
@@ -59,6 +62,11 @@
 - (void)saveScreenshot:(id)sender {
     (void)sender;
     [self.mainWindow saveScreenshot];
+}
+
+- (void)showAbout:(id)sender {
+    (void)sender;
+    [SSAboutPanel showWithAppName:@"SmallScreenshot" version:@"1.0"];
 }
 
 - (void)dealloc {
