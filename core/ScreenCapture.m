@@ -37,7 +37,7 @@
 
 - (BOOL)saveImage:(NSImage *)image asPNGToPath:(NSString *)path error:(NSError **)error {
     if (!image || !path) {
-        if (error) *error = [NSError errorWithDomain:@"ScreenCapture" code:1 userInfo:@{ NSLocalizedDescriptionKey: @"Missing image or path" }];
+        if (error) *error = [NSError errorWithDomain:@"ScreenCapture" code:1 userInfo:[NSDictionary dictionaryWithObject:@"Missing image or path" forKey:NSLocalizedDescriptionKey]];
         return NO;
     }
     NSBitmapImageRep *rep = nil;
@@ -52,7 +52,7 @@
         NSInteger w = (NSInteger)[image size].width;
         NSInteger h = (NSInteger)[image size].height;
         if (w <= 0 || h <= 0) {
-            if (error) *error = [NSError errorWithDomain:@"ScreenCapture" code:2 userInfo:@{ NSLocalizedDescriptionKey: @"Invalid image size" }];
+            if (error) *error = [NSError errorWithDomain:@"ScreenCapture" code:2 userInfo:[NSDictionary dictionaryWithObject:@"Invalid image size" forKey:NSLocalizedDescriptionKey]];
             return NO;
         }
         rep = [[NSBitmapImageRep alloc] initWithBitmapDataPlanes:NULL
@@ -62,7 +62,7 @@
                                                    colorSpaceName:NSDeviceRGBColorSpace
                                                       bytesPerRow:w * 4 bitsPerPixel:32];
         if (!rep) {
-            if (error) *error = [NSError errorWithDomain:@"ScreenCapture" code:3 userInfo:@{ NSLocalizedDescriptionKey: @"Could not create bitmap" }];
+            if (error) *error = [NSError errorWithDomain:@"ScreenCapture" code:3 userInfo:[NSDictionary dictionaryWithObject:@"Could not create bitmap" forKey:NSLocalizedDescriptionKey]];
             return NO;
         }
         [rep setAlpha:YES];
@@ -75,12 +75,12 @@
     }
     NSData *pngData = [rep representationUsingType:NSPNGFileType properties:[NSDictionary dictionary]];
     if (!pngData) {
-        if (error) *error = [NSError errorWithDomain:@"ScreenCapture" code:4 userInfo:@{ NSLocalizedDescriptionKey: @"Could not create PNG data" }];
+        if (error) *error = [NSError errorWithDomain:@"ScreenCapture" code:4 userInfo:[NSDictionary dictionaryWithObject:@"Could not create PNG data" forKey:NSLocalizedDescriptionKey]];
         return NO;
     }
     BOOL ok = [pngData writeToFile:path atomically:YES];
     if (!ok && error) {
-        *error = [NSError errorWithDomain:@"ScreenCapture" code:5 userInfo:@{ NSLocalizedDescriptionKey: @"Could not write file" }];
+        *error = [NSError errorWithDomain:@"ScreenCapture" code:5 userInfo:[NSDictionary dictionaryWithObject:@"Could not write file" forKey:NSLocalizedDescriptionKey]];
     }
     return ok;
 }

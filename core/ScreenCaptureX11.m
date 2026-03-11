@@ -9,6 +9,9 @@
 #import <Foundation/Foundation.h>
 #import <AppKit/AppKit.h>
 #import <objc/runtime.h>
+#ifndef OBJC_ASSOCIATION_RETAIN_NONATOMIC
+#define OBJC_ASSOCIATION_RETAIN_NONATOMIC 1
+#endif
 
 #if defined(__GNUSTEP__) || defined(__linux__)
 #include <X11/Xlib.h>
