@@ -39,8 +39,6 @@
 @end
 
 @interface CaptureOverlayWindow ()
-- (NSRect)selectionRect;
-- (void)setSelectionRect:(NSRect)r;
 - (void)finishCapture;
 @end
 

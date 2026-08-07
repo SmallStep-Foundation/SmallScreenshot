@@ -12,37 +12,31 @@ A screenshot tool for GNUStep on Linux. Capture the full screen or a region, pre
 ## Dependencies
 
 - **GNUStep** (gnustep-gui, gnustep-base)
-- **SmallStepLib** (../SmallStepLib) – app lifecycle, menus, file dialogs
-- **libX11** – X11 screen capture (Linux)
+- **SmallStepLib** (`../SmallStepLib`) – app lifecycle, menus, file dialogs
+- **libX11** – X11 screen capture (Linux; auto-detected via pkg-config)
 
 ## Build
 
-1. Build SmallStepLib first:
+SmallStepLib is built first automatically by [`../build_all.sh`](../build_all.sh); to build this app alone:
 
-   ```bash
-   cd ../SmallStepLib
-   make
-   sudo make install   # optional; or link from obj/
-   ```
+```bash
+. /tmp/gnustep-toolchain/setup-env.sh    # or your GNUstep env (GNUstep.sh)
+make -C ../SmallStepLib CC=clang         # once
+make CC=clang                            # from this directory
+```
 
-2. Build SmallScreenshot:
+## Run
 
-   ```bash
-   cd SmallScreenshot
-   make
-   ```
+```bash
+openapp ./SmallScreenshot.app            # from this directory
+# or: ./SmallScreenshot.app/SmallScreenshot
+```
 
-3. Run:
+## Test
 
-   ```bash
-   ./SmallScreenshot.app/SmallScreenshot
-   ```
-
-   Or from the project root:
-
-   ```bash
-   openapp ./SmallScreenshot.app
-   ```
+```bash
+make -f Tests/GNUmakefile CC=clang all && ./Tests/obj/test_SmallScreenshot
+```
 
 ## Usage
 
@@ -64,6 +58,17 @@ SmallScreenshot uses SmallStepLib as the starting point:
 
 - **libX11** – X11 API for `XGetImage()` on the root window. Used for full-screen and region capture. Converts XImage pixel data (with visual masks) to RGB and builds an `NSImage` for preview and PNG export.
 - **GNUStep** – NSBitmapImageRep and `representationUsingType:NSPNGFileType` for writing PNG files.
+
+## HiDPI
+
+GNUstep renders at 1:1 pixels; on high-DPI screens set the `GSScaleFactor`
+user default once to scale every GNUstep app (see the workspace
+[README](../README.md#hidpi-displays)):
+
+```bash
+defaults write NSGlobalDomain GSScaleFactor 2.0     # e.g. 2.0 for 192 DPI
+defaults delete NSGlobalDomain GSScaleFactor        # revert
+```
 
 ## License
 

@@ -8,17 +8,11 @@
 #import "ScreenCaptureX11.h"
 #import <Foundation/Foundation.h>
 #import <AppKit/AppKit.h>
-#import <objc/runtime.h>
-#ifndef OBJC_ASSOCIATION_RETAIN_NONATOMIC
-#define OBJC_ASSOCIATION_RETAIN_NONATOMIC 1
-#endif
 
 #if defined(__GNUSTEP__) || defined(__linux__)
 #include <X11/Xlib.h>
 #include <X11/Xutil.h>
 #endif
-
-static const void *kPixelDataKey = "ScreenCaptureX11PixelData";
 
 @implementation ScreenCaptureX11
 
@@ -109,17 +103,11 @@ static int maskToShift(unsigned long mask) {
     }
     XDestroyImage(ximg);
 
-    /* Keep pixel buffer alive for the lifetime of the image (rep does not copy) */
-    NSMutableData *data = [NSMutableData dataWithLength:rowBytes * (size_t)h];
-    if (!data) {
-        free(rgb);
-        return nil;
-    }
-    memcpy([data mutableBytes], rgb, rowBytes * (size_t)h);
-    free(rgb);
-
-    unsigned char *planes[1] = { (unsigned char *)[data mutableBytes] };
-    NSBitmapImageRep *rep = [[NSBitmapImageRep alloc] initWithBitmapDataPlanes:planes
+    /* Let the bitmap rep own a copy of the pixel buffer: this GNUstep
+       runtime has no objc_setAssociatedObject (see NSView+SSTag.m), so an
+       externally-held buffer cannot be kept alive for the image's lifetime.
+       initWithBitmapDataPlanes:NULL makes the rep allocate its own buffer. */
+    NSBitmapImageRep *rep = [[NSBitmapImageRep alloc] initWithBitmapDataPlanes:NULL
                                                                    pixelsWide:w
                                                                    pixelsHigh:h
                                                                 bitsPerSample:8
@@ -131,13 +119,16 @@ static int maskToShift(unsigned long mask) {
                                                                  bitsPerPixel:24];
     NSImage *image = nil;
     if (rep) {
+        if ([rep bitmapData]) {
+            memcpy([rep bitmapData], rgb, rowBytes * (size_t)h);
+        }
         image = [[NSImage alloc] initWithSize:NSMakeSize((CGFloat)w, (CGFloat)h)];
         if (image) {
             [image addRepresentation:rep];
-            objc_setAssociatedObject(image, kPixelDataKey, data, OBJC_ASSOCIATION_RETAIN_NONATOMIC);
         }
         [rep release];
     }
+    free(rgb);
     return [image autorelease];
 }
 

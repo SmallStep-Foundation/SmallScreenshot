@@ -29,6 +29,10 @@ SS_ASSUME_NONNULL_BEGIN
 - (id)initWithMainWindow:(MainWindow *)mainWindow;
 - (void)showOverlay;
 
+// Current drag-selection rectangle in overlay coordinates.
+- (NSRect)selectionRect;
+- (void)setSelectionRect:(NSRect)r;
+
 @end
 
 SS_ASSUME_NONNULL_END
